@@ -60,7 +60,7 @@ def load_existing_rates(currency: str) -> dict:
     return existing
 
 
-def save_rates_by_year(currency: str, rates: dict):
+def save_rates_by_year(currency: str, rates: dict, new_dates: set = None):
     """Save rates organized by year with direction to skill/rates/{BANK}/{YEAR}/"""
     bank_code = SOURCES[currency].bank_code
     rates_by_year = {}
@@ -72,7 +72,13 @@ def save_rates_by_year(currency: str, rates: dict):
             rates_by_year[year] = {}
         rates_by_year[year][date_str] = rate_data
 
+    years_with_new_data = set()
+    if new_dates:
+        for date in new_dates:
+            years_with_new_data.add(date[:4])
+
     # Save each year
+    saved_count = 0
     for year, year_rates in rates_by_year.items():
         year_dir = RATES_DIR / bank_code / year
         year_dir.mkdir(parents=True, exist_ok=True)
@@ -85,7 +91,16 @@ def save_rates_by_year(currency: str, rates: dict):
                 direction = year_rates[date]['direction']
                 f.write(f"{date},{rate},{direction}\n")
 
-        print(f"    Saved {len(year_rates)} rates to {rates_file}")
+        # Only report years that had new data
+        if not new_dates or year in years_with_new_data:
+            new_count = sum(1 for d in year_rates if d in (new_dates or set()))
+            status = f" (+{new_count} new)" if new_count > 0 else ""
+            print(f"    Saved {len(year_rates)} rates to {rates_file}{status}")
+            saved_count += 1
+
+    # If more than 3 years were updated but not shown, indicate that
+    if saved_count == 0 and len(rates_by_year) > 0:
+        print(f"    Saved rates to {len(rates_by_year)} year(s)")
 
 
 def main():
@@ -124,11 +139,23 @@ def main():
             }
 
             if new_dates:
+                sorted_new_dates = sorted(new_dates)
+                date_range = f"{sorted_new_dates[0]} to {sorted_new_dates[-1]}" if len(sorted_new_dates) > 1 else sorted_new_dates[0]
+
+                years_affected = {}
+                for date in sorted_new_dates:
+                    year = date[:4]
+                    years_affected[year] = years_affected.get(year, 0) + 1
+
+                years_summary = ", ".join([f"{year}: {count}" for year, count in sorted(years_affected.items())])
+
                 # Merge rates
                 all_rates = {**existing_rates, **new_rates}
-                save_rates_by_year(currency, all_rates)
+                save_rates_by_year(currency, all_rates, new_dates)
                 changes_made = True
                 print(f"   SUCCESS: Added {len(new_dates)} new rates")
+                print(f"      Date range: {date_range}")
+                print(f"      Years affected: {years_summary}")
             else:
                 print(f"   INFO: No new rates (all up to date)")
 
@@ -153,9 +180,7 @@ def main():
     print(f"Changes made: {'YES' if changes_made else 'NO'}")
     print(f"Output location: {RATES_DIR}/")
 
-    # Exit with appropriate code for GitHub Actions
-    # 0 = no changes, 1 = changes made
-    return 0 if not changes_made else 1
+    return 0
 
 
 if __name__ == '__main__':
