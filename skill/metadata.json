@@ -1,6 +1,6 @@
 {
-  "version": "1.5",
-  "release_date": "2025-11-03T07:13:28.897936Z",
+  "version": "1.6",
+  "release_date": "2025-11-10T03:18:17.901422Z",
   "currencies": {
     "EUR": {
       "source": "European Central Bank",
@@ -10,9 +10,9 @@
         "USD\u21c4EUR"
       ],
       "coverage_start": "2010-01-04",
-      "coverage_end": "2025-10-31",
-      "total_days": 4056,
-      "last_fetched": "2025-11-03T07:13:28.901313Z"
+      "coverage_end": "2025-11-07",
+      "total_days": 4061,
+      "last_fetched": "2025-11-10T03:18:17.904691Z"
     },
     "PLN": {
       "source": "Narodowy Bank Polski (National Bank of Poland)",
@@ -22,9 +22,9 @@
         "USD\u21c4PLN"
       ],
       "coverage_start": "2012-01-02",
-      "coverage_end": "2025-10-31",
-      "total_days": 3491,
-      "last_fetched": "2025-11-03T07:13:28.899682Z"
+      "coverage_end": "2025-11-07",
+      "total_days": 3496,
+      "last_fetched": "2025-11-10T03:18:17.903123Z"
     },
     "AUD": {
       "source": "Reserve Bank of Australia",
@@ -34,9 +34,9 @@
         "USD\u21c4AUD"
       ],
       "coverage_start": "2010-01-04",
-      "coverage_end": "2025-11-03",
-      "total_days": 3975,
-      "last_fetched": "2025-11-03T07:13:28.902854Z"
+      "coverage_end": "2025-11-07",
+      "total_days": 3979,
+      "last_fetched": "2025-11-10T03:18:17.906254Z"
     }
   }
 }
